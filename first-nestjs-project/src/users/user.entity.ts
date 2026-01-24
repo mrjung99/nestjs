@@ -1,15 +1,17 @@
+import { Profile } from 'src/profile/profile.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
 export class Users {
-  @Column({ unique: true })
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -34,6 +36,10 @@ export class Users {
     nullable: false,
   })
   password: string;
+
+  @OneToOne(() => Profile)
+  @JoinColumn()
+  profile?: Profile;
 
   @CreateDateColumn()
   createdAt: Date;
