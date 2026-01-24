@@ -22,14 +22,10 @@ export class UsersService {
   public async createUser(userDto: CreateUserDto) {
     //create and save profile
     userDto.profile = userDto.profile ?? {};
-    let profile = this.profileRepository.create(userDto.profile);
-    await this.profileRepository.save(profile);
+    // here profile will automatically created due to cascading, we use property cascade:['insert'] on onetoone
 
     // create user object
     let user = this.userRepository.create(userDto);
-
-    //set the profile to the user
-    user.profile = profile;
 
     //save user
     return await this.userRepository.save(user);
