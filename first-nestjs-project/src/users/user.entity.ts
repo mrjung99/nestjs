@@ -1,10 +1,12 @@
 import { Profile } from 'src/profile/profile.entity';
+import { Tweet } from 'src/tweet/tweet.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -43,6 +45,9 @@ export class Users {
     // eager: true, // if we pass eager here it will also load profile data when fetching profile data when there is bi-directional relation
   })
   profile?: Profile;
+
+  @OneToMany(() => Tweet, (tweet) => tweet.user)
+  tweets: Tweet[];
 
   @CreateDateColumn()
   createdAt: Date;

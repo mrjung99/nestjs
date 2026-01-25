@@ -25,6 +25,10 @@ export class UsersService {
     });
   }
 
+  async getUserById(id: number) {
+    return await this.userRepository.findOneBy({ id });
+  }
+
   public async createUser(userDto: CreateUserDto) {
     //create and save profile
     userDto.profile = userDto.profile ?? {};
