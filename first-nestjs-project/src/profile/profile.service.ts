@@ -11,6 +11,10 @@ export class ProfileService {
   ) {}
 
   getAllProfile() {
-    return this.profileRepository.find();
+    return this.profileRepository.find({
+      relations: {
+        user: true, // this only works when the realtion is bi-directional
+      },
+    });
   }
 }
