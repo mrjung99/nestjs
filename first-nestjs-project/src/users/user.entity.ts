@@ -39,6 +39,7 @@ export class Users {
 
   @OneToOne(() => Profile, {
     cascade: ['insert'],
+    eager: true,
   })
   @JoinColumn()
   profile?: Profile;

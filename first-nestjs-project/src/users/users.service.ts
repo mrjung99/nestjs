@@ -16,6 +16,12 @@ export class UsersService {
   ) {}
 
   geAllUser() {
+    //! we also do eager loading with this
+    // return this.userRepository.find({
+    //   relations: {
+    //     profile: true,
+    //   },
+    // });
     return this.userRepository.find();
   }
 
@@ -29,5 +35,29 @@ export class UsersService {
 
     //save user
     return await this.userRepository.save(user);
+  }
+
+  public async deleteUser(id: number) {
+    //find user with id
+    const user = await this.userRepository.findOneBy({ id });
+    console.log('user service is called.', user);
+
+    if (!user) {
+      return `User with the id: ${id} doesn't exist.`;
+    }
+    // delete user
+    await this.userRepository.delete(id);
+    //delete user profile
+    if (!user.profile) {
+      return `Profile with the id: ${id} doesn't exist.`;
+    }
+
+    await this.profileRepository.delete(user.profile.id);
+    // return response
+
+    return {
+      status: 'success',
+      message: `User with the id ${id} is deleted successfully!!`,
+    };
   }
 }
