@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
 import { CreateTweetDto } from './dto/create.tweet.dto';
 import { HastagService } from 'src/hastag/hastag.service';
+import { UpdateTweetDto } from './dto/update.tweet.dto';
 
 @Injectable()
 export class TweetService {
@@ -21,6 +22,7 @@ export class TweetService {
       where: { user: { id: userId } },
       relations: {
         user: true,
+        hastags: true,
       },
     });
 
@@ -51,5 +53,36 @@ export class TweetService {
 
     //save
     return await this.tweetRepository.save(tweet);
+  }
+
+  //* ------------------- update tweet ------------------
+  async updateTweet(updateTweet: UpdateTweetDto) {
+    // get hastags
+    updateTweet.hastags = updateTweet.hastags ?? []; // if the hastags comming from the user is null or undefined it will assign empty array
+    const hastags = await this.hastagService.getHastagArray(
+      updateTweet.hastags,
+    );
+
+    // get tweet
+    const tweet = await this.tweetRepository.findOneBy({ id: updateTweet.id });
+    if (!tweet) {
+      throw new NotFoundException(
+        `Tweet with the id: ${updateTweet.id} doesn't found!!`,
+      );
+    }
+    // creates objets for tweet
+    tweet.text = updateTweet.text ?? tweet.text;
+    tweet.image = updateTweet.image ?? tweet.image;
+    tweet.hastags = hastags;
+
+    //save the changes
+    const respose = await this.tweetRepository.save(tweet);
+
+    // send response
+    return {
+      status: 'success',
+      message: 'Tweet updated successfully.',
+      data: { tweet: respose },
+    };
   }
 }
