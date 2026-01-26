@@ -37,7 +37,7 @@ export class Tweet {
   @ManyToOne(() => Users, (user) => user.tweets, { onDelete: 'CASCADE' })
   user: Users;
 
-  @ManyToMany(() => Hastag)
+  @ManyToMany(() => Hastag, (hastag) => hastag.tweets)
   @JoinTable()
   hastags: Hastag[];
 }

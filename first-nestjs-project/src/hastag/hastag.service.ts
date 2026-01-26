@@ -29,4 +29,22 @@ export class HastagService {
       where: { id: In(hastags) },
     });
   }
+
+  //* ---------------------- delete hastag ------------------
+  async deleteHastag(id: number) {
+    await this.hastagRepository.delete({ id });
+    return {
+      status: 'success',
+      message: `Hastag with the id:${id} has been deleted!!`,
+    };
+  }
+
+  //* ---------------------- soft delete hastag ------------------
+  async softDeleteHastag(id: number) {
+    await this.hastagRepository.softDelete({ id });
+    return {
+      status: 'success',
+      message: `Hastag with the id:${id} has been soft deleted!!`,
+    };
+  }
 }

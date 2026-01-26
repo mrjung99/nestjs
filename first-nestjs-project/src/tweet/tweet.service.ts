@@ -85,4 +85,13 @@ export class TweetService {
       data: { tweet: respose },
     };
   }
+
+  //* ------------------------delete tweet ---------------------
+  async deleteTweet(id: number) {
+    await this.tweetRepository.delete({ id });
+    return {
+      stauts: 'success',
+      message: `A tweet with the id ${id} has been deleted!!`,
+    };
+  }
 }
