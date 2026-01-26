@@ -42,8 +42,12 @@ export class Users {
   @OneToOne(() => Profile, (profile) => profile.user, {
     //we passes second callback func as a argument to create a bi-direcitonal relation between Profile & Users entity
     cascade: ['insert'],
+    onDelete: 'CASCADE',
+    eager: true,
+
     // eager: true, // if we pass eager here it will also load profile data when fetching profile data when there is bi-directional relation
   })
+  @JoinColumn()
   profile?: Profile;
 
   @OneToMany(() => Tweet, (tweet) => tweet.user)

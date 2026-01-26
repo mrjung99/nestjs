@@ -51,7 +51,6 @@ export class Profile {
   })
   profilePic: string;
 
-  @OneToOne(() => Users, (user) => user.profile, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @OneToOne(() => Users, (user) => user.profile)
   user: Users;
 }

@@ -11,13 +11,18 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create.user.dto';
 
-@Controller('users')
+@Controller('user')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Get()
   getAllUsers() {
     return this.userService.geAllUser();
+  }
+
+  @Get(':id')
+  getUserById(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.getUserById(id);
   }
 
   @Post()
