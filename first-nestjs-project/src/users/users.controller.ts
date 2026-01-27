@@ -31,9 +31,12 @@ export class UsersController {
   }
 
   @Delete(':id')
-  public deleteUser(@Param('id', ParseIntPipe) id: number) {
-    console.log('controller is called');
+  async deleteUser(@Param('id', ParseIntPipe) id: number) {
+    await this.userService.deleteUser(id);
 
-    return this.userService.deleteUser(id);
+    return {
+      status: 'success',
+      message: `User with the id:${id} has been deleted.`,
+    };
   }
 }

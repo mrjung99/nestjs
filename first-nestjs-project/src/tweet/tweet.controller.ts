@@ -30,13 +30,24 @@ export class TweetController {
 
   //* ------------------ update tweet ----------------------
   @Patch()
-  updateTweet(@Body() updateTweet: UpdateTweetDto) {
-    return this.tweetService.updateTweet(updateTweet);
+  async updateTweet(@Body() updateTweet: UpdateTweetDto) {
+    const response = await this.tweetService.updateTweet(updateTweet);
+    // send response
+    return {
+      status: 'success',
+      message: 'Tweet updated successfully.',
+      data: { tweet: response },
+    };
   }
 
   //* ------------------ delete tweet ----------------------
   @Delete(':id')
-  deleteTweet(@Param('id', ParseIntPipe) id: number) {
-    return this.tweetService.deleteTweet(id);
+  async deleteTweet(@Param('id', ParseIntPipe) id: number) {
+    await this.tweetService.deleteTweet(id);
+
+    return {
+      status: 'success',
+      message: `Tweet with the id:${id} has been deleted successfully!!`,
+    };
   }
 }

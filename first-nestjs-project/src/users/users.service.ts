@@ -1,9 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { Repository } from 'typeorm';
 import { Users } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Profile } from 'src/profile/profile.entity';
+import { error } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -18,42 +27,75 @@ export class UsersService {
   geAllUser() {
     //! we also do eager loading with this
     // this is called eager loading
-    return this.userRepository.find({
+    const users = this.userRepository.find({
       relations: {
         profile: true,
       },
     });
+
+    if (!users) {
+      throw new NotFoundException('Users not found!!');
+    }
+
+    return users;
   }
 
+  //* -------------- get user by id ------------------------
   async getUserById(id: number) {
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
       throw new NotFoundException(`The user with the id: ${id} doesn't exist.`);
     }
-
     return user;
   }
 
+  //* ------------------- create user ---------------------
   public async createUser(userDto: CreateUserDto) {
-    //create and save profile
-    userDto.profile = userDto.profile ?? {};
-    // here profile will automatically created due to cascading, we use property cascade:['insert'] on onetoone
+    try {
+      //create and save profile
+      userDto.profile = userDto.profile ?? {};
 
-    // create user object
-    let user = this.userRepository.create(userDto);
+      // create user object
+      let user = this.userRepository.create(userDto);
 
-    //save user
-    return await this.userRepository.save(user);
+      //save user
+      return await this.userRepository.save(user);
+    } catch (error) {
+      if (error.code === '23505') {
+        if (error.detail?.includes('email')) {
+          throw new ConflictException({
+            status: 'fail',
+            error: { field: 'email', message: 'Email already exist.' },
+          });
+        }
+
+        if (error.detail?.includes('username')) {
+          throw new ConflictException({
+            status: 'fail',
+            error: { field: 'username', message: 'username already exist.' },
+          });
+        }
+      }
+    }
+
+    throw error;
   }
 
+  //* ---------------- delete user --------------------
   public async deleteUser(id: number) {
-    // delete user
-    await this.userRepository.delete(id);
-
-    return {
-      status: 'success',
-      message: `User with the id ${id} is deleted successfully!!`,
-    };
+    try {
+      // delete user
+      const user = await this.getUserById(id);
+      if (!user) {
+        throw new NotFoundException(`User with the id:${id} doesn't exist.`);
+      }
+      await this.userRepository.delete(id);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'An error has occured, please try again.',
+        { description: 'Database connection failed!!' },
+      );
+    }
   }
 }

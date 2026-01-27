@@ -9,6 +9,8 @@ import { ProfileModule } from './profile/profile.module';
 import { HastagModule } from './hastag/hastag.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+const ENV = process.env.NODE_ENV;
+
 @Module({
   imports: [
     UsersModule,
@@ -16,6 +18,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ProfileModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: !ENV ? '.env' : `.env.${ENV.trim()}.local`,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -23,8 +26,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         // entities: [Users],
-        autoLoadEntities: true,
-        synchronize: true,
+        autoLoadEntities: configService.get('AUTO_LOAD'),
+        synchronize: configService.get('DB_SYNC'),
         host: configService.get<string>('DB_HOST'),
         port: Number(configService.get<string>('DB_PORT')),
         username: configService.get<string>('DB_USERNAME'),
