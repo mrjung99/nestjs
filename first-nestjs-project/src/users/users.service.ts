@@ -15,6 +15,7 @@ import { Profile } from 'src/profile/profile.entity';
 import { error } from 'console';
 import { PaginationProvider } from 'src/common/pagination/pagination.provider';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination.query.dto';
+import { Paginated } from 'src/common/pagination/paginater.interface';
 
 @Injectable()
 export class UsersService {
@@ -28,7 +29,7 @@ export class UsersService {
   ) {}
 
   //* ---------------- get all users -----------------
-  geAllUser(paginationQueryDto: PaginationQueryDto) {
+  geAllUser(paginationQueryDto: PaginationQueryDto): Promise<Paginated<Users>> {
     const users = this.paginationProvider.paginateQuery(
       paginationQueryDto,
       this.userRepository,

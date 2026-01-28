@@ -8,6 +8,7 @@ import { HastagService } from 'src/hastag/hastag.service';
 import { UpdateTweetDto } from './dto/update.tweet.dto';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination.query.dto';
 import { PaginationProvider } from 'src/common/pagination/pagination.provider';
+import { Paginated } from 'src/common/pagination/paginater.interface';
 
 @Injectable()
 export class TweetService {
@@ -20,7 +21,10 @@ export class TweetService {
   ) {}
 
   //* ------------- get tweet of the user -----------------
-  async getTweet(userId: number, paginationQueryDto: PaginationQueryDto) {
+  async getTweet(
+    userId: number,
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise<Paginated<Tweet>> {
     // check if the user exist
     const user = await this.userService.getUserById(userId);
 
@@ -35,7 +39,7 @@ export class TweetService {
       { user: { id: userId } },
     );
 
-    if (!tweets.length) {
+    if (!tweets.data.length) {
       throw new NotFoundException(`No tweet with the user id: ${userId}`);
     }
 
