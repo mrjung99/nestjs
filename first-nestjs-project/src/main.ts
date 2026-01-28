@@ -9,6 +9,10 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      transformOptions: {
+        //this will transform all the query to the required dto type eg.paginationdto
+        enableImplicitConversion: true,
+      },
     }),
   );
   await app.listen(process.env.PORT ?? 3000);

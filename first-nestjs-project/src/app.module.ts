@@ -8,6 +8,7 @@ import { ProfileModule } from './profile/profile.module';
 // import { Users } from './users/user.entity';
 import { HastagModule } from './hastag/hastag.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PaginationModule } from './common/pagination/pagination.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -26,8 +27,8 @@ const ENV = process.env.NODE_ENV;
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         // entities: [Users],
-        autoLoadEntities: configService.get('AUTO_LOAD'),
-        synchronize: configService.get('DB_SYNC'),
+        autoLoadEntities: configService.get<boolean>('AUTO_LOAD'),
+        synchronize: configService.get<boolean>('DB_SYNC'),
         host: configService.get<string>('DB_HOST'),
         port: Number(configService.get<string>('DB_PORT')),
         username: configService.get<string>('DB_USERNAME'),
@@ -36,6 +37,7 @@ const ENV = process.env.NODE_ENV;
       }),
     }),
     HastagModule,
+    PaginationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

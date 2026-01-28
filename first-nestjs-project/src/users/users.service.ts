@@ -13,6 +13,8 @@ import { Users } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Profile } from 'src/profile/profile.entity';
 import { error } from 'console';
+import { PaginationProvider } from 'src/common/pagination/pagination.provider';
+import { PaginationQueryDto } from 'src/common/pagination/dto/pagination.query.dto';
 
 @Injectable()
 export class UsersService {
@@ -22,16 +24,15 @@ export class UsersService {
 
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
+    private readonly paginationProvider: PaginationProvider,
   ) {}
 
-  geAllUser() {
-    //! we also do eager loading with this
-    // this is called eager loading
-    const users = this.userRepository.find({
-      relations: {
-        profile: true,
-      },
-    });
+  //* ---------------- get all users -----------------
+  geAllUser(paginationQueryDto: PaginationQueryDto) {
+    const users = this.paginationProvider.paginateQuery(
+      paginationQueryDto,
+      this.userRepository,
+    );
 
     if (!users) {
       throw new NotFoundException('Users not found!!');

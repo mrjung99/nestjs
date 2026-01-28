@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  RequestTimeoutException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Tweet } from './tweet.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,26 +6,34 @@ import { UsersService } from 'src/users/users.service';
 import { CreateTweetDto } from './dto/create.tweet.dto';
 import { HastagService } from 'src/hastag/hastag.service';
 import { UpdateTweetDto } from './dto/update.tweet.dto';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { PaginationQueryDto } from 'src/common/pagination/dto/pagination.query.dto';
+import { PaginationProvider } from 'src/common/pagination/pagination.provider';
 
 @Injectable()
 export class TweetService {
   constructor(
     @InjectRepository(Tweet)
-    private tweetRepository: Repository<Tweet>,
-    private userService: UsersService,
-    private hastagService: HastagService,
+    private readonly tweetRepository: Repository<Tweet>,
+    private readonly userService: UsersService,
+    private readonly hastagService: HastagService,
+    private readonly paginationProvider: PaginationProvider,
   ) {}
 
   //* ------------- get tweet of the user -----------------
-  async getTweet(userId: number) {
-    const tweets = await this.tweetRepository.find({
-      where: { user: { id: userId } },
-      relations: {
-        user: true,
-        hastags: true,
-      },
-    });
+  async getTweet(userId: number, paginationQueryDto: PaginationQueryDto) {
+    // check if the user exist
+    const user = await this.userService.getUserById(userId);
+
+    if (!user) {
+      throw new NotFoundException(`No user with the user id: ${userId}`);
+    }
+
+    //check if tweet exist with pagination
+    const tweets = await this.paginationProvider.paginateQuery(
+      paginationQueryDto,
+      this.tweetRepository,
+      { user: { id: userId } },
+    );
 
     if (!tweets.length) {
       throw new NotFoundException(`No tweet with the user id: ${userId}`);
