@@ -1,8 +1,10 @@
 import {
   ConflictException,
+  forwardRef,
   HttpCode,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
   RequestTimeoutException,
@@ -16,6 +18,7 @@ import { error } from 'console';
 import { PaginationProvider } from 'src/common/pagination/pagination.provider';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination.query.dto';
 import { Paginated } from 'src/common/pagination/paginater.interface';
+import { HasingProvider } from 'src/auth/provider/hasing.provider';
 
 @Injectable()
 export class UsersService {
@@ -26,6 +29,9 @@ export class UsersService {
     @InjectRepository(Profile)
     private profileRepository: Repository<Profile>,
     private readonly paginationProvider: PaginationProvider,
+
+    @Inject(forwardRef(() => HasingProvider))
+    private readonly hasingProvider: HasingProvider,
   ) {}
 
   //* ---------------- get all users -----------------
@@ -58,8 +64,11 @@ export class UsersService {
       //create and save profile
       userDto.profile = userDto.profile ?? {};
 
-      // create user object
-      let user = this.userRepository.create(userDto);
+      // create user object and hash the password
+      let user = this.userRepository.create({
+        ...userDto,
+        password: await this.hasingProvider.hashPassword(userDto.password),
+      });
 
       //save user
       return await this.userRepository.save(user);

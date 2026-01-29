@@ -52,7 +52,7 @@ export class PaginationProvider {
       meta: {
         itemPerPage,
         totalItems,
-        currentPage: currentPage,
+        currentPage,
         totalPages,
       },
       links: {

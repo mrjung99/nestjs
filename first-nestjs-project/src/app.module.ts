@@ -9,6 +9,7 @@ import { ProfileModule } from './profile/profile.module';
 import { HastagModule } from './hastag/hastag.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PaginationModule } from './common/pagination/pagination.module';
+import { AuthModule } from './auth/auth.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -17,6 +18,7 @@ const ENV = process.env.NODE_ENV;
     UsersModule,
     TweetModule,
     ProfileModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: !ENV ? '.env' : `.env.${ENV.trim()}.local`,

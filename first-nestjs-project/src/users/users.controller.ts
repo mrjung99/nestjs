@@ -27,10 +27,10 @@ export class UsersController {
     return this.userService.getUserById(id);
   }
 
-  @Post()
-  createUser(@Body() user: CreateUserDto) {
-    return this.userService.createUser(user);
-  }
+  // @Post()
+  // createUser(@Body() user: CreateUserDto) {
+  //   return this.userService.createUser(user);
+  // }
 
   @Delete(':id')
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
