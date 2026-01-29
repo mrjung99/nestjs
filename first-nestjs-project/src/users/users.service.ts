@@ -8,6 +8,7 @@ import {
   Injectable,
   NotFoundException,
   RequestTimeoutException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { Repository } from 'typeorm';
@@ -58,6 +59,18 @@ export class UsersService {
     return user;
   }
 
+  //* -------------- find user by email ------------------------
+  async findUserByEmail(email: string) {
+    const user = await this.userRepository.findOneBy({ email });
+
+    if (!user) {
+      throw new UnauthorizedException(
+        `The user with the id: ${email} doesn't exist.`,
+      );
+    }
+    return user;
+  }
+
   //* ------------------- create user ---------------------
   public async createUser(userDto: CreateUserDto) {
     try {
@@ -65,7 +78,7 @@ export class UsersService {
       userDto.profile = userDto.profile ?? {};
 
       // create user object and hash the password
-      let user = this.userRepository.create({
+      const user = this.userRepository.create({
         ...userDto,
         password: await this.hasingProvider.hashPassword(userDto.password),
       });
