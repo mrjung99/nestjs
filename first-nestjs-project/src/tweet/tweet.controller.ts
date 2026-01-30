@@ -8,11 +8,13 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { TweetService } from './tweet.service';
 import { CreateTweetDto } from './dto/create.tweet.dto';
 import { UpdateTweetDto } from './dto/update.tweet.dto';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination.query.dto';
+import { AuthorizedGuard } from 'src/auth/guard/authorized.guard';
 
 @Controller('tweet')
 export class TweetController {

@@ -1,9 +1,7 @@
 import {
-  Body,
   forwardRef,
   Inject,
   Injectable,
-  Post,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dtos/create.user.dto';
@@ -28,6 +26,11 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     //FIND USER WITH THE EMAIL
     let user = await this.userSrvice.findUserByEmail(loginDto.email);
+    if (!user) {
+      throw new UnauthorizedException(
+        `Invalid email, user with the email doesn't exist!!`,
+      );
+    }
 
     //IF USER IS AVAILABLE, COMPARE THE PASSWORD
     const isPasswordMatched = await this.hasingProvider.comparePassword(
@@ -52,8 +55,9 @@ export class AuthService {
         issuer: this.authConfiguration.issuer,
       },
     );
+
     //SEND RESPONSE
-    return { status: 'success', token };
+    return token;
   }
 
   async signUp(createUserDto: CreateUserDto) {
