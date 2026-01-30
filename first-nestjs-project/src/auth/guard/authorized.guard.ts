@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import authConfig from '../config/auth.config';
 import { Reflector } from '@nestjs/core';
+import { REQUEST_FIELD_KEY } from '../constant/constant';
 
 //! we can apply guard in the current route, or in controller level or globally
 //! to apply route in the current route we use @useGuard(AuthorizedGuard) decoretor
@@ -48,7 +49,7 @@ export class AuthorizedGuard implements CanActivate {
         token,
         this.authconfiguration,
       );
-      request['user'] = payload;
+      request[REQUEST_FIELD_KEY] = payload;
     } catch (error) {
       console.log(error);
       throw new UnauthorizedException();

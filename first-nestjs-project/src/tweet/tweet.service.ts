@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Tweet } from './tweet.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +15,9 @@ import { UpdateTweetDto } from './dto/update.tweet.dto';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination.query.dto';
 import { PaginationProvider } from 'src/common/pagination/pagination.provider';
 import { Paginated } from 'src/common/pagination/paginater.interface';
+import { ActiveUserType } from 'src/auth/interfaces/activeuser.type.interface';
+import { Users } from 'src/users/user.entity';
+import { Hastag } from 'src/hastag/hastag.entity';
 
 @Injectable()
 export class TweetService {
@@ -47,16 +56,18 @@ export class TweetService {
   }
 
   //*---------------- create tweet --------------------
-  async createTweet(createTweetDto: CreateTweetDto) {
+  async createTweet(createTweetDto: CreateTweetDto, userId: number) {
     // find user
-    const user = await this.userService.getUserById(createTweetDto.userId);
-    if (!user) {
-      return `User with the id: ${createTweetDto.userId} doen't exist!!`;
-    }
+
+    const user = await this.userService.getUserById(userId);
 
     const hastags = await this.hastagService.getHastagArray(
-      createTweetDto.hastags,
+      createTweetDto.hastags ?? [],
     );
+
+    if (createTweetDto.hastags?.length !== hastags?.length) {
+      throw new BadRequestException('Hastag with the id not found');
+    }
     //create tweet
     const tweet = this.tweetRepository.create({
       ...createTweetDto,
@@ -65,7 +76,11 @@ export class TweetService {
     });
 
     //save
-    return await this.tweetRepository.save(tweet);
+    try {
+      return await this.tweetRepository.save(tweet);
+    } catch (error) {
+      throw new ConflictException(error);
+    }
   }
 
   //* ------------------- update tweet ------------------
