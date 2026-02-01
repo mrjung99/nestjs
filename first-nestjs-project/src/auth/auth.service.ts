@@ -69,7 +69,7 @@ export class AuthService {
   //* --------------------- generate token --------------------------
   private async generateToken(user: Users) {
     //  ACCESS TOKEN
-    const token = await this.signToken(user.id, this.authConfiguration.expiresIn, { email: user.email })
+    const token = await this.signToken(user.id, this.authConfiguration.expiresIn, { email: user.email, role: user.role })
     // REFRESH TOKEN
     const refreshToken = await this.signToken(user.id, this.authConfiguration.refreshTokenExpiresIn)
 

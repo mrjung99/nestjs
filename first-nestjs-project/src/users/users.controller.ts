@@ -12,12 +12,16 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { PaginationQueryDto } from 'src/common/pagination/dto/pagination.query.dto';
+import { Roles } from 'src/auth/decorator/role.decorator';
+import { Role } from 'src/auth/enum/role.enum';
 
 @Controller('user')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UsersService) { }
+
 
   @Get()
+  @Roles()
   getAllUsers(@Query() paginationQueryDto: PaginationQueryDto) {
     return this.userService.geAllUser(paginationQueryDto);
   }
@@ -31,8 +35,8 @@ export class UsersController {
   // createUser(@Body() user: CreateUserDto) {
   //   return this.userService.createUser(user);
   // }
-
   @Delete(':id')
+  @Roles(Role.ADMIN)
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     await this.userService.deleteUser(id);
 

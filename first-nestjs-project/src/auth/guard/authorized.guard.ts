@@ -13,7 +13,7 @@ import { Reflector } from '@nestjs/core';
 import { REQUEST_FIELD_KEY } from '../constant/constant';
 
 //! we can apply guard in the current route, or in controller level or globally
-//! to apply route in the current route we use @useGuard(AuthorizedGuard) decoretor
+//! to apply route in the current route we use @useGuard(AuthorizedGuard) decorator
 //! for controller level we use same decorator with @controller() decorator
 
 @Injectable()
@@ -23,7 +23,7 @@ export class AuthorizedGuard implements CanActivate {
     @Inject(authConfig.KEY)
     private readonly authconfiguration: ConfigType<typeof authConfig>,
     private readonly reflector: Reflector,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride('isPublic', [
@@ -35,7 +35,7 @@ export class AuthorizedGuard implements CanActivate {
       return true;
     }
 
-    //EXTRACT REQUEST FROM THE EXECUATION CONTEXT
+    //EXTRACT REQUEST FROM THE EXECUTION CONTEXT
     const request: Request = context.switchToHttp().getRequest();
 
     //EXTRACT JWT TOKEN FROM REQUEST

@@ -23,6 +23,10 @@ export class CreateUserDto {
   @MinLength(6)
   password: string;
 
+  @IsString()
+  @IsNotEmpty()
+  role: string
+
   @IsOptional()
   profile: CreateProfileDto;
 }

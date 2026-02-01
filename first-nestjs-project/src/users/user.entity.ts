@@ -1,3 +1,4 @@
+import { Role } from 'src/auth/enum/role.enum';
 import { Profile } from 'src/profile/profile.entity';
 import { Tweet } from 'src/tweet/tweet.entity';
 import {
@@ -38,6 +39,13 @@ export class Users {
     nullable: false,
   })
   password: string;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: 'user'
+  })
+  role: string
 
   @OneToOne(() => Profile, (profile) => profile.user, {
     //we passes second callback func as a argument to create a bi-direcitonal relation between Profile & Users entity
