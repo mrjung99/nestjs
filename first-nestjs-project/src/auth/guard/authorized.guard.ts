@@ -2,6 +2,7 @@ import {
   CanActivate,
   ExecutionContext,
   Inject,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import type { ConfigType } from '@nestjs/config';
@@ -15,16 +16,17 @@ import { REQUEST_FIELD_KEY } from '../constant/constant';
 //! to apply route in the current route we use @useGuard(AuthorizedGuard) decoretor
 //! for controller level we use same decorator with @controller() decorator
 
+@Injectable()
 export class AuthorizedGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     @Inject(authConfig.KEY)
     private readonly authconfiguration: ConfigType<typeof authConfig>,
-    private readonly reflactor: Reflector,
+    private readonly reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflactor.getAllAndOverride('isPublic', [
+    const isPublic = this.reflector.getAllAndOverride('isPublic', [
       context.getHandler(),
       context.getClass(),
     ]);

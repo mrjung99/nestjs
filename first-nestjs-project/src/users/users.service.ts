@@ -33,7 +33,7 @@ export class UsersService {
 
     @Inject(forwardRef(() => HasingProvider))
     private readonly hasingProvider: HasingProvider,
-  ) {}
+  ) { }
 
   //* ---------------- get all users -----------------
   geAllUser(paginationQueryDto: PaginationQueryDto): Promise<Paginated<Users>> {
@@ -65,7 +65,7 @@ export class UsersService {
 
     if (!user) {
       throw new UnauthorizedException(
-        `The user with the id: ${email} doesn't exist.`,
+        `The user with the email: ${email} not found.`,
       );
     }
     return user;
@@ -117,7 +117,7 @@ export class UsersService {
       await this.userRepository.delete(id);
     } catch (error) {
       throw new RequestTimeoutException(
-        'An error has occured, please try again.',
+        'An error has occurred, please try again.',
         { description: 'Database connection failed!!' },
       );
     }
